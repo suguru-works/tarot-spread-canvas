@@ -1,0 +1,18 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+
+# Local caches and temporary output
+node_modules/
+coverage/
+*.log
+*.tmp
+*.bak
+*.old
+
+# High-resolution source artwork retained locally for re-encoding.
+# The optimized WebP files in assets/backgrounds/ remain public assets.
+assets/backgrounds/source/*.png

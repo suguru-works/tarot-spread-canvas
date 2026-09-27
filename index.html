@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RWSタロット78枚から8種類のスプレッドを作成し、PNG・JPEGで保存できるブラウザアプリです。">
+  <title>Tarot Spread Canvas | タロット展開図作成</title>
+  <link rel="stylesheet" href="./css/style.css?v=1.0.0-rc17">
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-brand">TAROT SPREAD CANVAS</h1>
+    <div class="header-actions">
+      <p class="header-note">入力内容と画像生成はブラウザ内で処理されます。</p>
+      <button id="openHelp" type="button" class="header-help-button">ヘルプ</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section id="previewPanel" class="preview-panel" aria-labelledby="previewTitle">
+      <div class="preview-toolbar">
+        <label class="spread-select" for="spreadSelect">
+          <span>スプレッド</span>
+          <select id="spreadSelect"></select>
+        </label>
+
+        <section class="background-controls" aria-labelledby="backgroundTitle">
+          <h2 id="backgroundTitle">背景</h2>
+          <fieldset class="segmented-fieldset background-mode">
+            <legend class="visually-hidden">背景の種類</legend>
+            <label><input type="radio" name="backgroundMode" value="preset" checked> プリセット</label>
+            <label><input type="radio" name="backgroundMode" value="solid"> 単色</label>
+          </fieldset>
+          <div id="presetBackgrounds" class="theme-options" aria-label="プリセット背景"></div>
+          <div id="solidBackgrounds" class="solid-backgrounds" hidden>
+            <div id="solidSwatches" class="swatches" aria-label="単色背景"></div>
+            <label class="custom-color" for="customColorInput">カスタム<input id="customColorInput" type="color" value="#15120f"></label>
+          </div>
+        </section>
+      </div>
+
+      <div class="preview-heading">
+        <div>
+          <p class="section-kicker">編集プレビュー</p>
+          <h2 id="previewTitle">ツーオラクル</h2>
+        </div>
+        <p class="preview-help">空のカード枠を押してカードを選びます。配置済みカードは1回押すと編集対象になり、選択中にもう一度押すと正逆が切り替わります。</p>
+      </div>
+
+      <label class="question-editor" for="questionInput">
+        <span>テーマ・質問</span>
+        <textarea id="questionInput" rows="2" maxlength="160" placeholder="テーマ・質問"></textarea>
+      </label>
+
+      <div class="spread-assist" aria-label="カードの配置操作">
+        <label class="check-row" for="includeReversed">
+          <input id="includeReversed" type="checkbox" checked>
+          逆位置を含む
+        </label>
+        <div class="spread-assist-actions">
+          <button id="autoPlaceCards" type="button" class="secondary-button">カードを配置</button>
+          <button id="removeAllCards" type="button" class="secondary-button clear-all-button" disabled>カードをすべて外す</button>
+        </div>
+        <p id="autoPlaceStatus" class="spread-assist-status" role="status"></p>
+      </div>
+
+      <section id="choiceSpreadControls" class="choice-spread-controls" aria-labelledby="choiceSpreadControlsTitle" hidden>
+        <div class="choice-settings-row">
+          <fieldset class="segmented-fieldset">
+            <legend id="choiceSpreadControlsTitle">選択肢数</legend>
+            <label><input type="radio" name="choiceOptionCount" value="2" checked> 2択</label>
+            <label><input type="radio" name="choiceOptionCount" value="3"> 3択</label>
+            <label><input type="radio" name="choiceOptionCount" value="4"> 4択</label>
+          </fieldset>
+          <label class="check-row" for="choiceCommonEnabled">
+            <input id="choiceCommonEnabled" type="checkbox" checked>
+            共通カードを追加
+          </label>
+        </div>
+        <div id="choiceNameFields" class="choice-name-fields" aria-label="選択肢名"></div>
+      </section>
+
+      <div id="stage" class="stage">
+        <div id="sceneLayer" class="scene-layer is-wide">
+          <canvas id="spreadCanvas" width="1600" height="1000" aria-label="ツーオラクルの編集プレビュー"></canvas>
+          <div id="slotOverlay" class="slot-overlay" aria-label="カード配置の操作"></div>
+        </div>
+      </div>
+
+      <p id="previewStatus" class="preview-status" role="status" hidden></p>
+
+      <div class="card-actions" aria-live="polite">
+        <div class="selected-slot-editor">
+          <span class="label">選択中</span>
+          <strong id="selectedSlotText">左のカード枠</strong>
+          <label class="selected-role-field" for="selectedRoleInput">
+            役割名
+            <input id="selectedRoleInput" type="text" maxlength="30" autocomplete="off">
+          </label>
+        </div>
+        <div class="card-action-buttons">
+          <button id="replaceCardButton" type="button" class="secondary-button">カードを選択</button>
+          <button id="toggleOrientationButton" type="button" class="secondary-button" disabled>正逆切替</button>
+          <button id="removeCardButton" type="button" class="danger-button" disabled>カードを外す</button>
+        </div>
+      </div>
+
+      <section class="output-settings" aria-labelledby="outputSettingsTitle">
+        <div>
+          <p class="section-kicker">完成画像</p>
+          <h2 id="outputSettingsTitle">表示設定</h2>
+        </div>
+        <div class="output-setting-grid">
+          <fieldset class="segmented-fieldset">
+            <legend>出力言語</legend>
+            <label><input type="radio" name="cardLanguage" value="ja" checked> 日本語</label>
+            <label><input type="radio" name="cardLanguage" value="en"> English</label>
+          </fieldset>
+          <label class="check-row" for="showSpreadName"><input id="showSpreadName" type="checkbox" checked> スプレッド名を表示</label>
+          <label class="check-row" for="showCardNames"><input id="showCardNames" type="checkbox" checked> カード名を表示</label>
+          <label class="check-row" for="showOrientations"><input id="showOrientations" type="checkbox" checked> 正逆を表示</label>
+          <fieldset class="segmented-fieldset">
+            <legend>フォント</legend>
+            <label><input type="radio" name="outputFont" value="gothic" checked> ゴシック</label>
+            <label><input type="radio" name="outputFont" value="mincho"> 明朝</label>
+          </fieldset>
+        </div>
+      </section>
+
+      <section id="cardNamePanel" class="card-name-panel" aria-labelledby="cardNamePanelTitle">
+        <div>
+          <p class="section-kicker">全カード共通</p>
+          <h2 id="cardNamePanelTitle">カード名表記</h2>
+          <p class="field-note">すべてのカード名と、完成画像の自動表記に反映されます。</p>
+        </div>
+        <div id="japaneseNameSettings" class="name-setting-grid">
+          <fieldset id="suitStyleFieldset" class="segmented-fieldset">
+            <legend>スート</legend>
+            <label><input type="radio" name="suitStyle" value="kana" checked> カナ</label>
+            <label><input type="radio" name="suitStyle" value="kanji"> 漢字</label>
+          </fieldset>
+          <fieldset id="numberStyleFieldset" class="segmented-fieldset">
+            <legend>数字体系</legend>
+            <label><input type="radio" name="numberStyle" value="arabic" checked> アラビア数字</label>
+            <label><input type="radio" name="numberStyle" value="roman"> ローマ数字</label>
+          </fieldset>
+          <fieldset id="aceStyleFieldset" class="segmented-fieldset">
+            <legend>エース</legend>
+            <label><input type="radio" name="aceStyle" value="kana" checked> エース</label>
+            <label><input type="radio" name="aceStyle" value="number"> 数字</label>
+          </fieldset>
+          <fieldset id="courtStyleFieldset" class="segmented-fieldset">
+            <legend>コート</legend>
+            <label><input type="radio" name="courtStyle" value="kana" checked> カナ</label>
+            <label><input type="radio" name="courtStyle" value="kanji"> 漢字</label>
+          </fieldset>
+        </div>
+        <p id="cardNameSettingsNote" class="field-note"></p>
+      </section>
+    </section>
+
+    <aside class="control-panel" aria-label="日付と保存">
+      <section class="control-card" aria-labelledby="dateSettingsTitle">
+        <p class="section-kicker">任意</p>
+        <h2 id="dateSettingsTitle">日付</h2>
+        <div class="control-body">
+          <label class="check-row" for="dateEnabled"><input id="dateEnabled" type="checkbox"> 完成画像に日付を表示</label>
+          <div id="dateOptions" class="conditional-fields" hidden>
+            <fieldset class="segmented-fieldset">
+              <legend>日付形式</legend>
+              <label><input type="radio" name="dateMode" value="single" checked> 単日</label>
+              <label><input type="radio" name="dateMode" value="range"> 期間</label>
+            </fieldset>
+            <label id="singleDateField" for="singleDateInput">日付<input id="singleDateInput" type="date"></label>
+            <div id="rangeDateFields" class="date-range" hidden>
+              <label for="startDateInput">開始日<input id="startDateInput" type="date"></label>
+              <label for="endDateInput">終了日<input id="endDateInput" type="date"></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="saveCard" class="control-card save-card" aria-labelledby="saveTitle">
+        <p class="section-kicker">保存</p>
+        <h2 id="saveTitle">完成画像</h2>
+        <button id="openImagePreview" type="button" class="export-preview-frame export-preview-button" aria-label="完成画像プレビューを開く">
+          <canvas id="exportPreviewCanvas" width="1600" height="1000" aria-label="実際に保存される完成画像のプレビュー"></canvas>
+          <span class="export-preview-hint" aria-hidden="true">クリックして全体表示</span>
+        </button>
+        <fieldset class="option-group">
+          <legend>形式</legend>
+          <label><input type="radio" name="exportFormat" value="png" checked> PNG</label>
+          <label><input type="radio" name="exportFormat" value="jpeg"> JPEG</label>
+        </fieldset>
+        <fieldset class="option-group">
+          <legend>解像度</legend>
+          <label><input type="radio" name="exportSize" value="standard" checked> 標準（<span id="standardExportSize">1600 × 1000</span>）</label>
+          <label><input type="radio" name="exportSize" value="high"> 高解像度（<span id="highExportSize">3200 × 2000</span>）</label>
+        </fieldset>
+        <label id="jpegQualityField" class="quality-field" for="jpegQuality" hidden>
+          JPEG品質 <output id="jpegQualityOutput">90%</output>
+          <input id="jpegQuality" type="range" min="70" max="100" value="90" step="1">
+        </label>
+        <label class="filename-field" for="filenameInput">ファイル名（拡張子を除く）<input id="filenameInput" type="text" maxlength="100" autocomplete="off"></label>
+        <p class="field-note">入力内容と画像生成はブラウザ内で処理されます。</p>
+        <p id="saveStatus" class="save-status" role="status"></p>
+        <button id="saveImageButton" type="button" class="primary-button">保存する</button>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="app-footer" aria-label="サイト案内">
+    <nav class="footer-links" aria-label="ヘルプメニュー">
+      <button type="button" data-help-section="usage">使い方</button>
+      <button type="button" data-help-section="faq">FAQ</button>
+      <button type="button" data-help-section="about">このアプリについて</button>
+    </nav>
+    <p id="footerCopyright" class="copyright"></p>
+  </footer>
+
+  <dialog id="cardPickerDialog" class="card-picker-dialog" aria-labelledby="cardPickerTitle" aria-describedby="cardPickerTarget">
+    <div class="card-picker-shell">
+      <header class="card-picker-header">
+        <div>
+          <p class="section-kicker">カード選択</p>
+          <h2 id="cardPickerTitle">カードを選ぶ</h2>
+          <p id="cardPickerTarget" class="card-picker-target"></p>
+        </div>
+        <button id="closeCardPicker" type="button" class="icon-button" aria-label="カード選択を閉じる">×</button>
+      </header>
+      <div id="cardFilters" class="card-filters" role="group" aria-label="カードの絞り込み"></div>
+      <p class="card-picker-drag-help">カードをスプレッドの枠へドラッグして配置できます。</p>
+      <p id="cardResultCount" class="card-result-count" aria-live="polite"></p>
+      <div id="cardGrid" class="card-grid" aria-label="カード一覧"></div>
+    </div>
+  </dialog>
+
+  <dialog id="imagePreviewDialog" class="image-preview-dialog" aria-labelledby="imagePreviewTitle">
+    <div class="image-preview-shell">
+      <header class="image-preview-header">
+        <h2 id="imagePreviewTitle">完成画像プレビュー</h2>
+        <button id="closeImagePreview" type="button" class="icon-button" aria-label="完成画像プレビューを閉じる">×</button>
+      </header>
+      <div class="image-preview-stage" aria-label="完成画像全体のプレビュー">
+        <canvas id="fullSizePreviewCanvas" width="1600" height="1000"></canvas>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle">
+    <div class="help-shell">
+      <header class="help-header">
+        <div>
+          <p class="section-kicker">GUIDE</p>
+          <h2 id="helpTitle">ヘルプ</h2>
+        </div>
+        <button id="closeHelp" type="button" class="icon-button" aria-label="ヘルプを閉じる">×</button>
+      </header>
+
+      <div class="help-tabs" role="tablist" aria-label="ヘルプの内容">
+        <button id="helpTabUsage" type="button" role="tab" aria-selected="true" aria-controls="helpPanelUsage" tabindex="0" data-help-tab="usage">使い方</button>
+        <button id="helpTabFaq" type="button" role="tab" aria-selected="false" aria-controls="helpPanelFaq" tabindex="-1" data-help-tab="faq">FAQ</button>
+        <button id="helpTabAbout" type="button" role="tab" aria-selected="false" aria-controls="helpPanelAbout" tabindex="-1" data-help-tab="about">このアプリについて</button>
+      </div>
+
+      <div class="help-content">
+        <section id="helpPanelUsage" class="help-panel" role="tabpanel" aria-labelledby="helpTabUsage" data-help-panel="usage">
+          <h3>Tarot Spread Canvas の使い方</h3>
+          <ol class="help-steps">
+            <li><h4>スプレッドを選ぶ</h4><p>使用したいスプレッドを選択します。</p></li>
+            <li><h4>テーマ・質問を入力する</h4><p>必要に応じて、今回のリーディングのテーマや質問を入力します。入力しなくても使用できます。</p></li>
+            <li><h4>カードを配置する</h4><p>空いている位置を選んでカードを指定します。PCではドラッグ＆ドロップも利用できます。</p><p>「カードを配置」を使うと、現在のスプレッドへ必要な枚数のカードを78枚から重複なしで自動配置できます。</p></li>
+            <li><h4>カードや役割を調整する</h4><p>カードの正位置・逆位置や、各位置の役割名などを必要に応じて設定します。</p></li>
+            <li><h4>表示を整える</h4><p>背景、表示言語、カード名表記、フォントなどを変更できます。</p></li>
+            <li><h4>完成画像を保存する</h4><p>完成画像を確認し、PNGまたはJPEG形式で保存します。</p></li>
+          </ol>
+        </section>
+
+        <section id="helpPanelFaq" class="help-panel" role="tabpanel" aria-labelledby="helpTabFaq" data-help-panel="faq" hidden>
+          <h3>FAQ</h3>
+          <div class="faq-list">
+            <details><summary>入力したテーマや質問は外部へ送信されますか？</summary><div><p>いいえ。</p><p>テーマ・質問、カード配置などのリーディング内容は、アプリ内でブラウザ上にて処理されます。</p></div></details>
+            <details><summary>同じカードを複数の位置に配置できますか？</summary><div><p>できません。</p><p>1回のリーディングでは、同じカードは1枚として扱います。</p></div></details>
+            <details><summary>カードを自動で配置できますか？</summary><div><p>できます。</p><p>「カードを配置」を使用すると、現在のスプレッドに必要な枚数を78枚から重複なしで配置します。「逆位置を含む」のON/OFFも選択できます。</p></div></details>
+            <details><summary>配置したカードをまとめて外せますか？</summary><div><p>できます。</p><p>「カードをすべて外す」を使用すると、テーマや役割名などを残したまま、カード配置だけを空にできます。</p></div></details>
+            <details><summary>スマートフォンでも使えますか？</summary><div><p>はい。</p><p>スマートフォンやタブレットでは、カードをタップして選択できます。ドラッグ＆ドロップは主にPC向けの操作です。</p></div></details>
+            <details><summary>ブラウザを閉じてもリーディング内容は残りますか？</summary><div><p>作業内容の永続的な保存は保証していません。</p><p>残しておきたいリーディングは、完成画像として保存してください。</p></div></details>
+            <details><summary>保存した画像はどこかへアップロードされますか？</summary><div><p>いいえ。</p><p>完成画像はブラウザ上で生成して保存します。本アプリがリーディング画像を外部サーバーへ投稿することはありません。</p></div></details>
+            <details><summary>空いているカード位置があっても保存できますか？</summary><div><p>できます。</p><p>未選択の位置は空のカード枠として表示されるため、スプレッドの形を残したまま保存できます。</p></div></details>
+            <details><summary>このアプリは占い結果を自動で解釈しますか？</summary><div><p>いいえ。</p><p>Tarot Spread Canvas は、カードの配置・整理・画像作成を行うためのツールです。カードの解釈や鑑定結果の生成は行いません。</p></div></details>
+          </div>
+        </section>
+
+        <section id="helpPanelAbout" class="help-panel" role="tabpanel" aria-labelledby="helpTabAbout" data-help-panel="about" hidden>
+          <h3>Tarot Spread Canvas</h3>
+          <p>Tarot Spread Canvas は、タロットのスプレッドをブラウザ上で作成し、完成した配置を画像として保存するためのWebアプリです。</p>
+          <p>ワンオラクルからケルト十字まで複数のスプレッドに対応し、カードの正逆、役割名、背景、カード名表記などを自由に調整できます。</p>
+          <p>本アプリはカードの意味や鑑定結果を自動で提示するものではありません。</p>
+          <p>実際のカードを使ったリーディングの記録や、ブラウザ上でのスプレッド作成を補助することを目的としています。</p>
+          <h3>プライバシー</h3>
+          <p>テーマ・質問、カード配置などのリーディング内容は、アプリ内でブラウザ上にて処理されます。</p>
+          <p>本アプリから、それらの内容を外部サーバーへ送信する機能はありません。</p>
+          <p>アカウント登録や、クラウドへのリーディング保存も行いません。</p>
+          <h3>免責</h3>
+          <p>本アプリは、タロットカードの配置・記録を補助するツールです。</p>
+          <p>本アプリの利用によって生じた判断や結果を保証するものではありません。</p>
+          <h3>カード画像について</h3>
+          <p>本アプリでは、Rider–Waite–Smith Tarot をもとにしたカード画像を使用しています。</p>
+          <p>原作品の著作権が満了している範囲で利用するとともに、本アプリで使用するデジタル画像については、購入元より商用利用を含む利用許諾を得ています。</p>
+          <p id="aboutCopyright" class="about-copyright"></p>
+        </section>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="./js/app.js?v=1.0.0-rc19"></script>
+</body>
+</html>
