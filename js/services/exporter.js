@@ -21,6 +21,7 @@ export async function exportReadingImage({
   jpegQuality,
   filenameBase,
   fallbackFilenameBase,
+  saveBlob,
 }) {
   const canvas = document.createElement("canvas");
   await renderReading(canvas, { spread, state, getCard, getCardName, branding, scale });
@@ -30,10 +31,17 @@ export async function exportReadingImage({
   const extension = isJpeg ? "jpg" : "png";
   const quality = isJpeg ? jpegQuality : undefined;
   const blob = await canvasToBlob(canvas, mimeType, quality);
+  const filename = `${sanitizeFilenameBase(filenameBase, fallbackFilenameBase)}.${extension}`;
+
+  if (saveBlob) {
+    return saveBlob({ blob, filename, format });
+  }
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${sanitizeFilenameBase(filenameBase, fallbackFilenameBase)}.${extension}`;
+  link.download = filename;
   link.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return { status: "downloaded" };
 }

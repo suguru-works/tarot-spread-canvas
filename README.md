@@ -55,6 +55,8 @@ node tests/smoke.mjs
 
 Tauri 2を使用し、Web版と同じHTML／CSS／JavaScriptをWindows実行ファイルへ埋め込みます。実行時にNode.js、Pythonサーバー、GitHub Pagesへの接続は不要です。Windows 10／11に標準提供されるMicrosoft Edge WebView2 Runtimeは必要です。
 
+Windows版では、PNG／JPEG保存時にネイティブの保存ダイアログを開き、保存先とファイル名を選択できます。Web版は従来どおりブラウザの保存機能を使用します。
+
 ビルド環境ではRust MSVC toolchain、Microsoft C++ Build Tools、Windows SDK、Node.jsが必要です。
 
 ```powershell
@@ -69,7 +71,7 @@ npm run tauri:build:portable
 src-tauri/target/release/TarotSpreadCanvas.exe
 ```
 
-`dist/`は`scripts/build-dist.mjs`が実行に必要なWeb資産だけを生成します。MSI／NSISインストーラーは作成しません。現在のEXEはコード署名を行っていないため、配布時にWindows SmartScreenの警告が表示される可能性があります。また、正式なアプリアイコンは未決定で、現在は技術確認用の単色プレースホルダーです。
+`dist/`は`scripts/build-dist.mjs`が実行に必要なWeb資産だけを生成します。MSI／NSISインストーラーは作成しません。現在のEXEはコード署名を行っていないため、配布時にWindows SmartScreenの警告が表示される可能性があります。アプリアイコンには文字なしの魔術師カードモチーフを使用します。
 
 ## ディレクトリ
 
@@ -80,6 +82,7 @@ js/                        データ、状態、描画、操作、保存処理
 Cards/                     Canvas用カード画像78枚
 assets/card-thumbnails/    カードピッカー用画像78枚
 assets/backgrounds/        Cosmic／Woodの公開用WebP
+assets/app-icon-magician.png Windows版アイコン原版
 tests/smoke.mjs            公開アセットと主要状態の検査
 scripts/build-dist.mjs      Tauri用runtime資産の生成
 src-tauri/                  Tauri 2のRust・Windows設定

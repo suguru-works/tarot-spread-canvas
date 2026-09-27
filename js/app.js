@@ -10,7 +10,8 @@ import {
 import { renderReading } from "./canvas/renderer.js?v=1.0.0-rc14";
 import { createInitialReadingState, createReadingStore } from "./state/store.js?v=1.0.0-rc13";
 import { getCard, getCardName, getCards } from "./services/card-repository.js?v=1.0.0-rc10";
-import { exportReadingImage } from "./services/exporter.js?v=1.0.0-rc13";
+import { exportReadingImage } from "./services/exporter.js?v=1.0.0-rc14";
+import { applyRuntimeContent, saveBlobWithNativeDialog } from "./platform/runtime.js?v=1.0.0-windows1";
 import { createTimestamp } from "./utils/date.js";
 import { createRandomCardLayout } from "./utils/random.js?v=1.0.0-rc13";
 import { createDragController } from "./interactions/drag-and-drop.js";
@@ -94,6 +95,7 @@ let cardPickerReturnFocus = null;
 let helpReturnFocus = null;
 let filenameEdited = false;
 const desktopDragQuery = window.matchMedia("(min-width: 641px) and (hover: hover) and (pointer: fine)");
+const isDesktopApp = applyRuntimeContent();
 
 function canUseDragAndDrop() {
   return desktopDragQuery.matches;
@@ -840,7 +842,7 @@ function bindEvents() {
     elements.saveCard.setAttribute("aria-busy", "true");
     elements.saveStatus.textContent = "画像を作成しています…";
     try {
-      await exportReadingImage({
+      const result = await exportReadingImage({
         spread,
         state: store.getState(),
         getCard,
@@ -851,8 +853,15 @@ function bindEvents() {
         jpegQuality: Number(elements.jpegQuality.value) / 100,
         filenameBase: elements.filenameInput.value,
         fallbackFilenameBase,
+        saveBlob: isDesktopApp ? saveBlobWithNativeDialog : undefined,
       });
-      elements.saveStatus.textContent = "保存を開始しました。";
+      if (result.status === "cancelled") {
+        elements.saveStatus.textContent = "保存をキャンセルしました。";
+      } else if (result.status === "saved") {
+        elements.saveStatus.textContent = "画像を保存しました。";
+      } else {
+        elements.saveStatus.textContent = "保存を開始しました。";
+      }
     } catch (error) {
       console.error(error);
       elements.saveStatus.textContent = error.message || "画像を保存できませんでした。";

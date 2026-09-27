@@ -389,7 +389,9 @@ Windows Portable版はTauri 2を使用し、既存Web版のソースを共用し
 
 Windowsビルドは`npm run tauri:build:portable`によるTauri 2の`--no-bundle`を基本とし、MSI／NSISを作成しません。アプリ識別子は`works.suguru.tarotspreadcanvas`、実行ファイル名は`TarotSpreadCanvas.exe`です。filesystem、shell、process、HTTP等のTauriプラグイン権限は、明確な必要性がない限り追加しないでください。WindowsのHTML5ドラッグ＆ドロップを維持するため、TauriのWebViewファイルドロップ処理は無効化します。
 
-Portable EXEはWebView2 Runtimeを利用します。正式アイコンが決定するまでは技術確認用プレースホルダーであること、コード署名を行わない初期配布ではSmartScreen警告が出る可能性があることを明示してください。Androidへ展開する場合も`src-tauri/src/lib.rs`の共有エントリーポイントと同一`dist`生成方針を維持し、プラットフォーム固有の権限を必要最小限にしてください。
+Windows版の画像保存は、Rust側のTauriコマンドから公式dialog pluginを使ってネイティブ保存ダイアログを開き、ユーザーが選んだパスへ書き込みます。Web版のブラウザ保存処理は維持し、`window.__TAURI__`が存在する場合だけWindows保存へ分岐してください。保存ダイアログで選んだパス以外へ書き込める汎用filesystem権限は追加しないでください。Windows版ヘルプは共通HTML内のplatform別表示として管理し、Web版の案内を変更しないでください。
+
+Portable EXEはWebView2 Runtimeを利用します。正式アイコンは`assets/app-icon-magician.png`を原版とする文字なしの魔術師カードモチーフです。Tauri用の32px、128px、256px、ICOを`src-tauri/icons/`で管理してください。コード署名を行わない初期配布ではSmartScreen警告が出る可能性があることを明示してください。Androidへ展開する場合も`src-tauri/src/lib.rs`の共有エントリーポイントと同一`dist`生成方針を維持し、プラットフォーム固有の権限を必要最小限にしてください。
 
 ---
 

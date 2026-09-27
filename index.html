@@ -11,7 +11,10 @@
   <header class="app-header">
     <h1 class="app-brand">TAROT SPREAD CANVAS</h1>
     <div class="header-actions">
-      <p class="header-note">入力内容と画像生成はブラウザ内で処理されます。</p>
+      <p class="header-note">
+        <span data-web-only>入力内容と画像生成はブラウザ内で処理されます。</span>
+        <span data-desktop-only hidden>入力内容と画像生成はこのPC内で処理されます。</span>
+      </p>
       <button id="openHelp" type="button" class="header-help-button">ヘルプ</button>
     </div>
   </header>
@@ -202,7 +205,10 @@
           <input id="jpegQuality" type="range" min="70" max="100" value="90" step="1">
         </label>
         <label class="filename-field" for="filenameInput">ファイル名（拡張子を除く）<input id="filenameInput" type="text" maxlength="100" autocomplete="off"></label>
-        <p class="field-note">入力内容と画像生成はブラウザ内で処理されます。</p>
+        <p class="field-note">
+          <span data-web-only>入力内容と画像生成はブラウザ内で処理されます。</span>
+          <span data-desktop-only hidden>入力内容と画像生成はこのPC内で処理されます。</span>
+        </p>
         <p id="saveStatus" class="save-status" role="status"></p>
         <button id="saveImageButton" type="button" class="primary-button">保存する</button>
       </section>
@@ -265,20 +271,31 @@
 
       <div class="help-content">
         <section id="helpPanelUsage" class="help-panel" role="tabpanel" aria-labelledby="helpTabUsage" data-help-panel="usage">
-          <h3>Tarot Spread Canvas の使い方</h3>
-          <ol class="help-steps">
-            <li><h4>スプレッドを選ぶ</h4><p>使用したいスプレッドを選択します。</p></li>
-            <li><h4>テーマ・質問を入力する</h4><p>必要に応じて、今回のリーディングのテーマや質問を入力します。入力しなくても使用できます。</p></li>
-            <li><h4>カードを配置する</h4><p>空いている位置を選んでカードを指定します。PCではドラッグ＆ドロップも利用できます。</p><p>「カードを配置」を使うと、現在のスプレッドへ必要な枚数のカードを78枚から重複なしで自動配置できます。</p></li>
-            <li><h4>カードや役割を調整する</h4><p>カードの正位置・逆位置や、各位置の役割名などを必要に応じて設定します。</p></li>
-            <li><h4>表示を整える</h4><p>背景、表示言語、カード名表記、フォントなどを変更できます。</p></li>
-            <li><h4>完成画像を保存する</h4><p>完成画像を確認し、PNGまたはJPEG形式で保存します。</p></li>
-          </ol>
+          <div data-web-only>
+            <h3>Tarot Spread Canvas の使い方</h3>
+            <ol class="help-steps">
+              <li><h4>スプレッドを選ぶ</h4><p>使用したいスプレッドを選択します。</p></li>
+              <li><h4>テーマ・質問を入力する</h4><p>必要に応じて、今回のリーディングのテーマや質問を入力します。入力しなくても使用できます。</p></li>
+              <li><h4>カードを配置する</h4><p>空いている位置を選んでカードを指定します。PCではドラッグ＆ドロップも利用できます。</p><p>「カードを配置」を使うと、現在のスプレッドへ必要な枚数のカードを78枚から重複なしで自動配置できます。</p></li>
+              <li><h4>カードや役割を調整する</h4><p>カードの正位置・逆位置や、各位置の役割名などを必要に応じて設定します。</p></li>
+              <li><h4>表示を整える</h4><p>背景、表示言語、カード名表記、フォントなどを変更できます。</p></li>
+              <li><h4>完成画像を保存する</h4><p>完成画像を確認し、PNGまたはJPEG形式で保存します。</p></li>
+            </ol>
+          </div>
+          <div data-desktop-only hidden>
+            <h3>Windows版の使い方</h3>
+            <ol class="help-steps">
+              <li><h4>スプレッドを選ぶ</h4><p>ワンオラクル、ツーオラクル、ツーマインド、スリーカード、ホースシュー、選択式、ヘキサグラム、ケルト十字から選択します。</p></li>
+              <li><h4>カードを配置する</h4><p>空の枠を押してカードを選びます。配置済みカードを選ぶと、カード変更、正逆切替、役割名入力、カードを外す操作ができます。</p><p>「カードを配置」は必要枚数を重複なしで自動配置し、「カードをすべて外す」はテーマや役割名を残してカードだけを外します。</p></li>
+              <li><h4>内容と表示を整える</h4><p>必要に応じてテーマ・質問や役割名を入力し、背景、表示言語、カード名表記、フォントを変更します。</p></li>
+              <li><h4>完成画像を保存する</h4><p>PNGまたはJPEGと解像度を選び、「保存する」を押します。Windowsの保存画面で保存先とファイル名を指定できます。</p></li>
+            </ol>
+          </div>
         </section>
 
         <section id="helpPanelFaq" class="help-panel" role="tabpanel" aria-labelledby="helpTabFaq" data-help-panel="faq" hidden>
           <h3>FAQ</h3>
-          <div class="faq-list">
+          <div class="faq-list" data-web-only>
             <details><summary>入力したテーマや質問は外部へ送信されますか？</summary><div><p>いいえ。</p><p>テーマ・質問、カード配置などのリーディング内容は、アプリ内でブラウザ上にて処理されます。</p></div></details>
             <details><summary>同じカードを複数の位置に配置できますか？</summary><div><p>できません。</p><p>1回のリーディングでは、同じカードは1枚として扱います。</p></div></details>
             <details><summary>カードを自動で配置できますか？</summary><div><p>できます。</p><p>「カードを配置」を使用すると、現在のスプレッドに必要な枚数を78枚から重複なしで配置します。「逆位置を含む」のON/OFFも選択できます。</p></div></details>
@@ -289,18 +306,40 @@
             <details><summary>空いているカード位置があっても保存できますか？</summary><div><p>できます。</p><p>未選択の位置は空のカード枠として表示されるため、スプレッドの形を残したまま保存できます。</p></div></details>
             <details><summary>このアプリは占い結果を自動で解釈しますか？</summary><div><p>いいえ。</p><p>Tarot Spread Canvas は、カードの配置・整理・画像作成を行うためのツールです。カードの解釈や鑑定結果の生成は行いません。</p></div></details>
           </div>
+          <div class="faq-list" data-desktop-only hidden>
+            <details><summary>インターネット接続がなくても使えますか？</summary><div><p>はい。カード画像や背景はアプリ内に収録されているため、オフラインでも利用できます。</p></div></details>
+            <details><summary>入力内容や画像は外部へ送信されますか？</summary><div><p>いいえ。テーマ・質問、カード配置、画像生成はこのPC内で処理されます。クラウド保存や外部送信は行いません。</p></div></details>
+            <details><summary>画像はどこへ保存されますか？</summary><div><p>「保存する」を押すとWindowsの保存画面が開きます。任意のフォルダとファイル名を指定して、PNGまたはJPEGで保存できます。</p></div></details>
+            <details><summary>カードを自動で配置できますか？</summary><div><p>「カードを配置」で、現在のスプレッドに必要なカードを78枚から重複なしで配置できます。「逆位置を含む」も選択できます。</p></div></details>
+            <details><summary>すべてのカードを外せますか？</summary><div><p>「カードをすべて外す」で、テーマ・役割名・表示設定を残したままカード配置だけを空にできます。</p></div></details>
+            <details><summary>初回起動時にWindowsの警告が表示されます</summary><div><p>このPortable版はコード署名を行っていないため、SmartScreenの確認が表示される場合があります。配布元を確認したうえで起動してください。</p></div></details>
+            <details><summary>WebView2 Runtimeとは何ですか？</summary><div><p>Windowsアプリの画面表示に使用するMicrosoftの実行環境です。通常はWindows 10／11に導入済みです。</p></div></details>
+          </div>
         </section>
 
         <section id="helpPanelAbout" class="help-panel" role="tabpanel" aria-labelledby="helpTabAbout" data-help-panel="about" hidden>
-          <h3>Tarot Spread Canvas</h3>
-          <p>Tarot Spread Canvas は、タロットのスプレッドをブラウザ上で作成し、完成した配置を画像として保存するためのWebアプリです。</p>
-          <p>ワンオラクルからケルト十字まで複数のスプレッドに対応し、カードの正逆、役割名、背景、カード名表記などを自由に調整できます。</p>
-          <p>本アプリはカードの意味や鑑定結果を自動で提示するものではありません。</p>
-          <p>実際のカードを使ったリーディングの記録や、ブラウザ上でのスプレッド作成を補助することを目的としています。</p>
-          <h3>プライバシー</h3>
-          <p>テーマ・質問、カード配置などのリーディング内容は、アプリ内でブラウザ上にて処理されます。</p>
-          <p>本アプリから、それらの内容を外部サーバーへ送信する機能はありません。</p>
-          <p>アカウント登録や、クラウドへのリーディング保存も行いません。</p>
+          <div data-web-only>
+            <h3>Tarot Spread Canvas</h3>
+            <p>Tarot Spread Canvas は、タロットのスプレッドをブラウザ上で作成し、完成した配置を画像として保存するためのWebアプリです。</p>
+            <p>ワンオラクルからケルト十字まで複数のスプレッドに対応し、カードの正逆、役割名、背景、カード名表記などを自由に調整できます。</p>
+            <p>本アプリはカードの意味や鑑定結果を自動で提示するものではありません。</p>
+            <p>実際のカードを使ったリーディングの記録や、ブラウザ上でのスプレッド作成を補助することを目的としています。</p>
+            <h3>プライバシー</h3>
+            <p>テーマ・質問、カード配置などのリーディング内容は、アプリ内でブラウザ上にて処理されます。</p>
+            <p>本アプリから、それらの内容を外部サーバーへ送信する機能はありません。</p>
+            <p>アカウント登録や、クラウドへのリーディング保存も行いません。</p>
+          </div>
+          <div data-desktop-only hidden>
+            <h3>Tarot Spread Canvas for Windows</h3>
+            <p>タロットの配置を作成し、完成画像を保存するWindows向けPortableアプリです。</p>
+            <p>ワンオラクル、ツーオラクル、ツーマインド、スリーカード、ホースシュー、選択式、ヘキサグラム、ケルト十字の8種類に対応しています。</p>
+            <p>カードの意味や鑑定結果を自動生成するものではなく、リーディングの配置・記録・画像作成を補助します。</p>
+            <h3>Windows版について</h3>
+            <p>カード画像と背景をアプリ内に収録しているためオフラインで使用できます。画面表示にはMicrosoft Edge WebView2 Runtimeを使用します。</p>
+            <p>未署名の初期配布版では、初回起動時にWindows SmartScreenの確認が表示される場合があります。</p>
+            <h3>プライバシー</h3>
+            <p>テーマ・質問、カード配置、完成画像の生成はこのPC内で処理されます。外部サーバーへの送信、アカウント登録、クラウド保存は行いません。</p>
+          </div>
           <h3>免責</h3>
           <p>本アプリは、タロットカードの配置・記録を補助するツールです。</p>
           <p>本アプリの利用によって生じた判断や結果を保証するものではありません。</p>
@@ -313,6 +352,6 @@
     </div>
   </dialog>
 
-  <script type="module" src="./js/app.js?v=1.0.0-rc19"></script>
+  <script type="module" src="./js/app.js?v=1.0.0-windows1"></script>
 </body>
 </html>
