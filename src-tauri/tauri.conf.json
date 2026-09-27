@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Tarot Spread Canvas",
+  "version": "1.0.0",
+  "identifier": "works.suguru.tarotspreadcanvas",
+  "build": {
+    "beforeBuildCommand": "npm run build:dist",
+    "beforeDevCommand": "npm run build:dist",
+    "frontendDist": "../dist",
+    "windows": {
+      "staticVCRuntime": true
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Tarot Spread Canvas",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "maximizable": true,
+        "dragDropEnabled": false,
+        "generalAutofillEnabled": false,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'"
+    }
+  },
+  "bundle": {
+    "active": false,
+    "targets": []
+  }
+}

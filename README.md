@@ -51,6 +51,26 @@ node tests/smoke.mjs
 
 公開後はリポジトリのPages設定で、`main`ブランチのルートを公開元として選択できます。
 
+## Windows Portable版
+
+Tauri 2を使用し、Web版と同じHTML／CSS／JavaScriptをWindows実行ファイルへ埋め込みます。実行時にNode.js、Pythonサーバー、GitHub Pagesへの接続は不要です。Windows 10／11に標準提供されるMicrosoft Edge WebView2 Runtimeは必要です。
+
+ビルド環境ではRust MSVC toolchain、Microsoft C++ Build Tools、Windows SDK、Node.jsが必要です。
+
+```powershell
+npm install
+npm run build:dist
+npm run tauri:build:portable
+```
+
+生成先：
+
+```text
+src-tauri/target/release/TarotSpreadCanvas.exe
+```
+
+`dist/`は`scripts/build-dist.mjs`が実行に必要なWeb資産だけを生成します。MSI／NSISインストーラーは作成しません。現在のEXEはコード署名を行っていないため、配布時にWindows SmartScreenの警告が表示される可能性があります。また、正式なアプリアイコンは未決定で、現在は技術確認用の単色プレースホルダーです。
+
 ## ディレクトリ
 
 ```text
@@ -61,6 +81,9 @@ Cards/                     Canvas用カード画像78枚
 assets/card-thumbnails/    カードピッカー用画像78枚
 assets/backgrounds/        Cosmic／Woodの公開用WebP
 tests/smoke.mjs            公開アセットと主要状態の検査
+scripts/build-dist.mjs      Tauri用runtime資産の生成
+src-tauri/                  Tauri 2のRust・Windows設定
+package.json                Tauri CLIとPortableビルドコマンド
 card-master-base.js        正式Card Master元データ
 AGENTS.md                  開発・保守方針
 ```

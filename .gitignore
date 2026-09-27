@@ -8,6 +8,13 @@ Desktop.ini
 # Local caches and temporary output
 node_modules/
 coverage/
+dist/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/icons/*
+!src-tauri/icons/icon.ico
+!src-tauri/icons/placeholder.svg
+artifacts/
 *.log
 *.tmp
 *.bak

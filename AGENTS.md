@@ -383,6 +383,14 @@ React、Vue、Svelteなどのフレームワークは、明確な必要性がな
 
 小規模な機能のためだけに大きな依存関係を追加しないでください。
 
+## Windows Portable版
+
+Windows Portable版はTauri 2を使用し、既存Web版のソースを共用します。`scripts/build-dist.mjs`で実行に必要な`index.html`、`card-master-base.js`、`css/`、`js/`、`Cards/`、サムネイル、Cosmic／WoodのWebPだけを`dist/`へ生成し、`src-tauri/tauri.conf.json`の`frontendDist`から埋め込んでください。リポジトリルート全体を埋め込まないでください。
+
+Windowsビルドは`npm run tauri:build:portable`によるTauri 2の`--no-bundle`を基本とし、MSI／NSISを作成しません。アプリ識別子は`works.suguru.tarotspreadcanvas`、実行ファイル名は`TarotSpreadCanvas.exe`です。filesystem、shell、process、HTTP等のTauriプラグイン権限は、明確な必要性がない限り追加しないでください。WindowsのHTML5ドラッグ＆ドロップを維持するため、TauriのWebViewファイルドロップ処理は無効化します。
+
+Portable EXEはWebView2 Runtimeを利用します。正式アイコンが決定するまでは技術確認用プレースホルダーであること、コード署名を行わない初期配布ではSmartScreen警告が出る可能性があることを明示してください。Androidへ展開する場合も`src-tauri/src/lib.rs`の共有エントリーポイントと同一`dist`生成方針を維持し、プラットフォーム固有の権限を必要最小限にしてください。
+
 ---
 
 # Responsive Design
